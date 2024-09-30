@@ -12,6 +12,9 @@
     <!-- Doze: should the TYPE_PICK_UP_GESTURE sensor be used as a pulse signal. -->
     <bool name="config_dozePulsePickup">true</bool>
 
+    <!-- Type of the quick pickup sensor. Empty if quick pickup is not supported. -->
+    <string name="config_quickPickupSensorType" translatable="false">android.sensor.glance_gesture</string>
+
     <!-- Whether WiFi display is supported by this device.
          There are many prerequisites for this feature to work correctly.
          Here are a few of them:
