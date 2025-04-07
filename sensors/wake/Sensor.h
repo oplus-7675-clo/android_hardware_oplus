@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include <condition_variable>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -39,6 +40,8 @@ namespace sensors {
 namespace V2_1 {
 namespace subhal {
 namespace implementation {
+
+extern std::string GetPollPath(const char** array);
 
 class ISensorsEventCallback {
   public:
@@ -91,17 +94,23 @@ class OneShotSensor : public Sensor {
     virtual Result flush() override { return Result::BAD_VALUE; }
 };
 
-class UdfpsSensor : public OneShotSensor {
+class SysfsPollingOneShotSensor : public OneShotSensor {
   public:
-    UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback);
-    virtual ~UdfpsSensor() override;
+    SysfsPollingOneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callback,
+                              const std::string& pollPath, const std::string& name,
+                              const std::string& typeAsString, SensorType type);
+    virtual ~SysfsPollingOneShotSensor() override;
 
     virtual void activate(bool enable) override;
+    virtual void activate(bool enable, bool notify, bool lock);
     virtual void setOperationMode(OperationMode mode) override;
+    virtual std::vector<Event> readEvents() override;
+    virtual void fillEventData(Event& event);
 
   protected:
     virtual void run() override;
-    virtual std::vector<Event> readEvents();
+
+    std::ofstream mEnableStream;
 
   private:
     void interruptPoll();
@@ -109,10 +118,57 @@ class UdfpsSensor : public OneShotSensor {
     struct pollfd mPolls[2];
     int mWaitPipeFd[2];
     int mPollFd;
-
-    int mScreenX;
-    int mScreenY;
 };
+
+static const char* udfpsPaths[] = {
+  "/sys/kernel/oplus_display/fp_state",
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/fp_pressed",
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/fp_pressed",
+  NULL
+};
+
+class UdfpsSensor : public SysfsPollingOneShotSensor {
+  public:
+    UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
+        : SysfsPollingOneShotSensor(
+              sensorHandle, callback, GetPollPath(udfpsPaths),
+              "UDFPS Sensor", "org.lineageos.sensor.udfps",
+              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
+};
+
+#ifdef USES_DOUBLE_TAP_SENSOR
+static const char* doubleTapPaths[] = {
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/double_tap_pressed",
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/double_tap_pressed",
+  NULL
+};
+
+class DoubleTapSensor : public SysfsPollingOneShotSensor {
+  public:
+    DoubleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
+        : SysfsPollingOneShotSensor(
+              sensorHandle, callback, GetPollPath(doubleTapPaths),
+              "Double Tap Sensor", "org.yaap.sensor.double_tap",
+              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
+};
+#endif
+
+#ifdef USES_TAP_SENSOR
+static const char* singleTapPaths[] = {
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/single_tap_pressed",
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/single_tap_pressed",
+  NULL
+};
+
+class SingleTapSensor : public SysfsPollingOneShotSensor {
+  public:
+    SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
+        : SysfsPollingOneShotSensor(
+              sensorHandle, callback, GetPollPath(singleTapPaths),
+              "Tap Sensor", "org.yaap.sensor.tap",
+              static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1)) {}
+};
+#endif
 
 }  // namespace implementation
 }  // namespace subhal
