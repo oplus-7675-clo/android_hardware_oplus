@@ -27,8 +27,13 @@ cc_library_shared {
         "android.hardware.sensors@1.0-convert",
         "android.hardware.sensors@2.X-multihal",
     ],
-    cflags: [
-        "-DLOG_TAG=\"sensors.oplus\"",
-    ],
+    cflags: ["-DLOG_TAG=\"sensors.oplus\""] + select(soong_config_variable("oplus_sensors", "uses_tap_sensor"), {
+        "true": ["-DUSES_TAP_SENSOR"],
+        default: [],
+    })
+    + select(soong_config_variable("oplus_sensors", "uses_double_tap_sensor"), {
+        "true": ["-DUSES_DOUBLE_TAP_SENSOR"],
+        default: [],
+    }),
     vendor: true,
 }
