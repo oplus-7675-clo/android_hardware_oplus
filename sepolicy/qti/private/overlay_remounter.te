@@ -1,0 +1,1 @@
+allow overlay_remounter vendor_richtap_resources:dir { getattr search open read write };

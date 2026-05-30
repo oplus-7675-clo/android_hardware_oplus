@@ -1,2 +1,5 @@
 # Engineering
 type vendor_persist_engineer_file, file_type;
+
+# RichTap HE resources
+type vendor_richtap_resources, file_type;
