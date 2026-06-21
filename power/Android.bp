@@ -9,7 +9,11 @@ cc_library_static {
     srcs: ["power-feature.cpp"],
     shared_libs: [
         "libbase",
+        "libbinder_ndk",
         "vendor.aospa.power-V1-ndk",
+    ],
+    whole_static_libs: [
+        "vendor.oplus.hardware.touch-V2-ndk",
     ],
     vendor: true,
 }
