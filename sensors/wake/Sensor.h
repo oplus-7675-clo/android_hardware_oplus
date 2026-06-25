@@ -122,6 +122,7 @@ class SysfsPollingOneShotSensor : public OneShotSensor {
 
 static const char* udfpsPaths[] = {
   "/sys/kernel/oplus_display/fp_state",
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_0_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/fp_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/fp_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/fp_pressed",
   NULL
@@ -138,6 +139,7 @@ class UdfpsSensor : public SysfsPollingOneShotSensor {
 
 #ifdef USES_DOUBLE_TAP_SENSOR
 static const char* doubleTapPaths[] = {
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_0_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/double_tap_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/double_tap_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/double_tap_pressed",
   NULL
@@ -155,6 +157,7 @@ class DoubleTapSensor : public SysfsPollingOneShotSensor {
 
 #ifdef USES_TAP_SENSOR
 static const char* singleTapPaths[] = {
+  "/sys/devices/platform/soc/ac0000.qcom,qupv3_0_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/single_tap_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi0/spi0.0/synaptics_tcm_hbp.0/single_tap_pressed",
   "/sys/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/synaptics_tcm_hbp.0/single_tap_pressed",
   NULL
