@@ -7,7 +7,6 @@ android_app {
     platform_apis: true,
     system_ext_specific: true,
 
-    libs: ["SystemUIPluginLib"],
     static_libs: [
         "co.aospa.resources",
     ],
